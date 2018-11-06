@@ -15,7 +15,10 @@ CREATE TABLE users (
 CREATE TABLE questions (
   id INTEGER PRIMARY KEY,
   title TEXT,
-  body TEXT
+  body TEXT,
+  user_id INTEGER NOT NULL,
+  
+  FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 CREATE TABLE question_follows (
@@ -31,7 +34,7 @@ CREATE TABLE replies (
   id INTEGER PRIMARY KEY,
   body TEXT,
   question_id INTEGER NOT NULL,
-  reply_id INTEGER,
+  reply_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   
   FOREIGN KEY(question_id) REFERENCES questions(id),
@@ -49,16 +52,16 @@ CREATE TABLE question_likes (
 );
 
 INSERT INTO
-  questions (title, body)
-VALUES
-  ('CSS Question', 'CSS margin problems'),
-  ('SQL Question', 'How to create tables');
-  
-INSERT INTO
   users (fname, lname)
 VALUES
   ('Miso', 'Lee'),
   ('Sai', 'Pat');
+  
+INSERT INTO
+  questions (title, body, user_id)
+VALUES
+  ('CSS Question', 'CSS margin problems', 1),
+  ('SQL Question', 'How to create tables', 2);
   
 INSERT INTO
   question_follows (user_id, question_id)
@@ -67,9 +70,9 @@ VALUES
   (2, 2);
   
 INSERT INTO
-  replies (body, question_id, user_id)
+  replies (body, question_id, reply_id, user_id)
 VALUES
-  ('You are never going to learn CSS', 1, 1),
-  ('Useless', 2, 2);
+  ('You are never going to learn CSS', 1, 1, 1),
+  ('Useless', 2, 2, 2);
 
   
