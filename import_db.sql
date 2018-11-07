@@ -73,6 +73,7 @@ INSERT INTO
   replies (body, question_id, reply_id, user_id)
 VALUES
   ('You are never going to learn CSS', 1, 1, 1),
+  ('Fix problems', 1, 1, 1),
   ('Useless', 2, 2, 2);
 
   

@@ -122,18 +122,60 @@ class QuestionsFollows
     data.map { |datum| QuestionsFollows.new(datum) }
   end
   
-  def self.find_by_id(user_id, question_id)
-    question_follows = QuestionsDatabase.instance.execute(<<-SQL, user_id, question_id)
+  def self.find_by_id(user_id)
+    question_follows = QuestionsDatabase.instance.execute(<<-SQL, user_id)
       SELECT 
         *
       FROM
         question_follows
       WHERE
-        user_id = ?, question_id = ?
+        user_id = ?
     SQL
     return nil unless question_follows.length > 0
     
     QuestionsFollows.new(question_follows.first)
+  end
+  
+  def self.followers_for_question_id(question_id)
+    followers = QuestionsDatabase.instance.execute(<<-SQL, question_id)
+      SELECT
+        *
+      FROM
+        question_follows
+      JOIN
+        users ON question_follows.user_id = users.id
+      WHERE
+        question_follows.question_id = ?
+    SQL
+    return nil unless followers.length > 0
+    
+    arr = []
+    followers.each do |user|
+      arr << Users.new(user)
+    end
+    
+    arr
+  end
+  
+  def self.followers_for_user_id(user_id)
+    followers = QuestionsDatabase.instance.execute(<<-SQL, user_id)
+      SELECT
+        *
+      FROM
+        question_follows
+      JOIN
+        questions ON question_follows.question_id = questions.id
+      WHERE
+        question_follows.user_id = ?
+    SQL
+    return nil unless followers.length > 0
+    
+    arr = []
+    followers.each do |question|
+      arr << Questions.new(question)
+    end
+    
+    arr
   end
   
   def initialize(options)
@@ -224,7 +266,22 @@ class Replies
   end
   
   def child_replies
+    child_reply = QuestionsDatabase.instance.execute(<<-SQL, @id)
+      SELECT 
+        *
+      FROM
+        replies
+      WHERE
+        reply_id = ?
+    SQL
+    return nil unless child_reply.length > 0
     
+    arr = []
+    child_reply.each do |reply|
+      arr << Replies.new(reply)
+    end
+    
+    arr
   end
 end
 
