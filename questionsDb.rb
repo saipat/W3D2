@@ -118,7 +118,7 @@ class Users
   end
   
   def followed_questions
-    QuestionsFollows.followers_for_user_id(@id)
+    QuestionsFollows.followed_questions_for_user_id(@id)
   end
 end
 
@@ -147,7 +147,7 @@ class QuestionsFollows
   def self.followers_for_question_id(question_id)
     followers = QuestionsDatabase.instance.execute(<<-SQL, question_id)
       SELECT
-        *
+        users.*
       FROM
         question_follows
       JOIN
@@ -165,10 +165,10 @@ class QuestionsFollows
     arr
   end
   
-  def self.followers_for_user_id(user_id)
+  def self.followed_questions_for_user_id(user_id)
     followers = QuestionsDatabase.instance.execute(<<-SQL, user_id)
       SELECT
-        *
+        questions.*
       FROM
         question_follows
       JOIN
